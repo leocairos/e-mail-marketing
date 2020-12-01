@@ -1,0 +1,17 @@
+# dependencies
+backend/node_modules/
+frontend/node_modules/
+
+# production
+backend/dist/
+frontend/build/
+
+# misc
+backend/npm-debug.log*
+backend/yarn-debug.log*
+backend/yarn-error.log*
+backend/yarn.lock
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/yarn.lock
