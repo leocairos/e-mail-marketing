@@ -1,7 +1,19 @@
 import app from "./app";
+import database from './db';
 
-const port = parseInt(`${process.env.PORT}`);
+(async () => {
 
-app.listen(port, () => {
-  console.log(`[Accounts] Micro Service running on port ${port}...`)
-});
+  try {
+    const port = parseInt(`${process.env.PORT}`);
+
+    await database.sync();
+    console.log(`[${process.env.DB_NAME}] Database running...`);
+
+    await app.listen(port);
+    console.log(`[Accounts] Service running on port ${port}...`);
+
+  } catch (error) {
+    console.log(`${error}`);
+  }
+
+})();

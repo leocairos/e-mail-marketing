@@ -1,25 +1,33 @@
 import request from 'supertest';
 import app from '../src/app';
+import { IAccount } from '../src/models/account';
+import repository from '../src/models/accountRepository';
+const testEmail = 'jest@auth.com';
+const hashPassword = '$2a$10$hDEgCZwBW3lTBIWou2N4YuYkrD5y25K7DV5nTeaF5CSFDpFsNULjq'; //senha1234
+const testPassword = 'senha1234';
 
-describe('Testando rota do accounts', () => {
+beforeAll(async () => {
+  const testAccount: IAccount = {
+    name: 'Jest Auth',
+    email: testEmail,
+    password: hashPassword,
+    domain: 'jest.com'
+  }
+  await repository.add(testAccount);
+})
+
+afterAll(async () => {
+  await repository.removeByEmail(testEmail);
+})
+
+describe('Testando rota do auth', () => {
+
   it('POST /accounts/login - 200 ok', async () => {
-    const payload = {
-      id: 1,
-      name: 'leonardo',
-      email: 'leo@mail.com',
-      password: '12345678',
-      status: 100,
-    }
-
-    await request(app)
-      .post('/accounts/')
-      .send(payload)
-
     const resultado = await request(app)
       .post('/accounts/login')
       .send({
-        email: 'leo@mail.com',
-        password: '12345678'
+        email: testEmail,
+        password: testPassword
       })
 
     expect(resultado.status).toEqual(200);
@@ -27,12 +35,22 @@ describe('Testando rota do accounts', () => {
     expect(resultado.body.token).toBeTruthy();
   })
 
+  it('POST /accounts/login - 422 Unprocessable Entity', async () => {
+    const resultado = await request(app)
+      .post('/accounts/login')
+      .send({
+        email: testEmail,
+      })
+
+    expect(resultado.status).toEqual(422);
+  })
+
   it('POST /accounts/login - 401 Unauthorized', async () => {
     const resultado = await request(app)
       .post('/accounts/login')
       .send({
-        email: 'leo@mail.com',
-        password: 'abcabcxs'
+        email: testEmail,
+        password: testPassword + '12'
       })
 
     expect(resultado.status).toEqual(401);
@@ -45,7 +63,5 @@ describe('Testando rota do accounts', () => {
       .send()
 
     expect(resultado.status).toEqual(200);
-    expect(resultado.body.auth).toBeFalsy();
-    expect(resultado.body.token).toBeFalsy();
   })
 })
