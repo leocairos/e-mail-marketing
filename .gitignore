@@ -6,6 +6,7 @@ frontend/node_modules/
 .env
 
 **/keys/private.key
+**/keys/public.key
 
 # production
 backend/*/dist/
