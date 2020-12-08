@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import { IAccount } from '../models/account';
 import repository from '../models/accountRepository';
 import auth from '../auth';
+import controllerCommons from 'ms-commons/api/controllers/controller';
+import { Token } from 'ms-commons/api/auth';
 
 async function getAccounts(req: Request, res: Response, next: any) {
   const accounts: IAccount[] = await repository.findAll();
@@ -14,10 +16,13 @@ async function getAccounts(req: Request, res: Response, next: any) {
 
 async function getAccount(req: Request, res: Response, next: any) {
   try {
-    const id = parseInt(req.params.id);
-    if (!id) return res.status(400).end();
+    const accountId = parseInt(req.params.id);
+    if (!accountId) return res.status(400).end();
 
-    const account = await repository.findById(id);
+    const token = controllerCommons.getToken(res) as Token;
+    if (accountId !== token.accountId) return res.status(403).end();
+
+    const account = await repository.findById(accountId);
     if (account === null) {
       return res.status(404).end();
     } else {
@@ -49,6 +54,9 @@ async function setAccount(req: Request, res: Response, next: any) {
     const accountId = parseInt(req.params.id);
     if (!accountId) return res.status(400).end();
 
+    const token = controllerCommons.getToken(res) as Token;
+    if (accountId !== token.accountId) return res.status(403).end();
+
     const accountParams = req.body as IAccount;
     if (accountParams.password) {
       accountParams.password = auth.hashPassword(accountParams.password);
@@ -74,7 +82,6 @@ async function loginAccount(req: Request, res: Response, next: any) {
   try {
     const loginParams = req.body as IAccount;
     const account = await repository.findByEmail(loginParams.email);
-    console.log(JSON.stringify(account))
     if (account !== null) {
       const isValid = auth.comparePassword(loginParams.password, account.password)
       if (isValid) {
@@ -94,4 +101,29 @@ function logoutAccount(req: Request, res: Response, next: any) {
   res.json({ auth: false, token: null })
 }
 
-export default { getAccounts, getAccount, addAccount, setAccount, loginAccount, logoutAccount };
+async function deleteAccount(req: Request, res: Response, next: any) {
+  try {
+
+    const accountId = parseInt(req.params.id);
+    if (!accountId) return res.status(400).end();
+
+    const token = controllerCommons.getToken(res) as Token;
+    if (accountId !== token.accountId) return res.status(403).end();
+
+    await repository.remove(accountId);
+    return res.status(200).end();
+  } catch (error) {
+    console.log(error);
+    return res.status(400).end();
+  }
+
+}
+export default {
+  getAccounts,
+  getAccount,
+  addAccount,
+  setAccount,
+  loginAccount,
+  logoutAccount,
+  deleteAccount
+};
