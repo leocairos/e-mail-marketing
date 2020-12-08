@@ -43,6 +43,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await repository.removeByEmail(testEmail, testAccountId);
+  await repository.removeByEmail(testEmail2, testAccountId);
 
   await request(accountsApp)
     .post('/accounts/logout')
@@ -101,5 +102,130 @@ describe('Testando rota do contacts', () => {
       .get('/contacts/' + testContactId)
 
     expect(resultado.status).toEqual(401);
+  })
+
+  it('POST /contacts/ - Deve retornar statusCode 201', async () => {
+    const payload = {
+      name: 'Jest Contact',
+      email: testEmail2,
+      phone: '99789541236'
+    } as IContact;
+
+    const resultado = await request(app)
+      .post('/contacts/')
+      .set('x-access-token', token)
+      .send(payload);
+
+    expect(resultado.status).toEqual(201);
+    expect(resultado.body.id).toBeTruthy();
+  })
+
+  it('POST /contacts/ - Deve retornar statusCode 422', async () => {
+    const payload = {
+      street: 'Jest Street',
+    };
+
+    const resultado = await request(app)
+      .post('/contacts/')
+      .set('x-access-token', token)
+      .send(payload);
+
+    expect(resultado.status).toEqual(422);
+  })
+
+  it('POST /contacts/ - Deve retornar statusCode 401', async () => {
+    const payload = {
+      name: 'Jest Contact',
+      email: testEmail2,
+      phone: '99789541236'
+    } as IContact;
+
+    const resultado = await request(app)
+      .post('/contacts/')
+      .send(payload);
+
+    expect(resultado.status).toEqual(401);
+
+  })
+
+  it('POST /contacts/ - Deve retornar statusCode 400', async () => {
+    const payload = {
+      name: 'Jest Contact',
+      email: testEmail,
+      phone: '99789541236'
+    } as IContact;
+
+    const resultado = await request(app)
+      .post('/contacts/')
+      .set('x-access-token', token)
+      .send(payload);
+
+    expect(resultado.status).toEqual(400);
+  })
+
+  it('PATCH /contacts/ - Deve retornar statusCode 200', async () => {
+    const payload = {
+      name: 'Jest Contact Updated',
+    };
+
+    const resultado = await request(app)
+      .patch('/contacts/' + testContactId)
+      .set('x-access-token', token)
+      .send(payload);
+
+    expect(resultado.status).toEqual(200);
+    expect(resultado.body.name).toEqual(payload.name);
+  })
+
+  it('PATCH /contacts/ - Deve retornar statusCode 401', async () => {
+    const payload = {
+      name: 'Jest Contact Updated',
+    };
+
+    const resultado = await request(app)
+      .patch('/contacts/' + testContactId)
+      .send(payload);
+
+    expect(resultado.status).toEqual(401);
+  })
+
+  it('PATCH /contacts/ - Deve retornar statusCode 422', async () => {
+    const payload = {
+      street: 'Street ted',
+    };
+
+    const resultado = await request(app)
+      .patch('/contacts/' + testContactId)
+      .set('x-access-token', token)
+      .send(payload);
+
+    expect(resultado.status).toEqual(422);
+
+  })
+
+  it('PATCH /contacts/ - Deve retornar statusCode 404', async () => {
+    const payload = {
+      name: 'Jest Contact Updated',
+    };
+
+    const resultado = await request(app)
+      .patch('/contacts/-1')
+      .set('x-access-token', token)
+      .send(payload);
+
+    expect(resultado.status).toEqual(404);
+  })
+
+  it('PATCH /contacts/ - Deve retornar statusCode 400', async () => {
+    const payload = {
+      name: 'Jest Contact Updated',
+    };
+
+    const resultado = await request(app)
+      .patch('/contacts/abc')
+      .set('x-access-token', token)
+      .send(payload);
+
+    expect(resultado.status).toEqual(400);
   })
 })

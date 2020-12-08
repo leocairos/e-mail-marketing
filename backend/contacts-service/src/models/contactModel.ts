@@ -34,4 +34,9 @@ export default database.define<IContactModel>('contact', {
     allowNull: false,
     defaultValue: 100,
   },
+}, {
+  indexes: [{
+    unique: true,
+    fields: ['accountId', 'email']
+  }]
 })

@@ -1,5 +1,8 @@
 import { Router } from 'express';
 import middlewaresCommons from 'ms-commons/api/routes/middlewares';
+
+import { validateContactSchema, validateUpdateContactSchema } from '../routes/middlewares';
+
 import contactsController from '../controllers/contacts'
 
 const router = Router();
@@ -8,4 +11,12 @@ router.get('/contacts/:id', middlewaresCommons.validateAuth, contactsController.
 
 router.get('/contacts/', middlewaresCommons.validateAuth, contactsController.getContacts)
 
-export default router;
+router.post('/contacts/',
+  middlewaresCommons.validateAuth, validateContactSchema,
+  contactsController.addContact)
+
+router.patch('/contacts/:id',
+  middlewaresCommons.validateAuth, validateUpdateContactSchema,
+  contactsController.setContact)
+
+export default router; 
