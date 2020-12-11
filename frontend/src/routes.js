@@ -1,4 +1,7 @@
 import React from 'react';
+import SignIn from './pages/public/SignIn';
+import SignUp from './pages/public/SignUp';
+
 import {
   BrowserRouter as Router,
   Switch, Route, Link, useParams, useRouteMatch
@@ -43,22 +46,6 @@ function Contatos() {
         <Route exact path={path} />
         <Route path={`${path}/:contactId`} component={Contact} />
       </Switch>
-    </div>
-  )
-}
-
-function Signin() {
-  return (
-    <div>
-      <h2>Signin</h2>
-    </div>
-  )
-}
-
-function Signup() {
-  return (
-    <div>
-      <h2>Signup</h2>
     </div>
   )
 }
@@ -121,8 +108,8 @@ export default function Routes() {
           <Route exact path="/" component={Home} />
           <Route path="/contacts" component={Contatos} />
           <Route path="/messages" component={Messages} />
-          <Route path="/signin" component={Signin} />
-          <Route path="/signup" component={Signup} />
+          <Route path="/signin" component={SignIn} />
+          <Route path="/signup" component={SignUp} />
         </Switch>
       </div>
     </Router>

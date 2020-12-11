@@ -17,3 +17,7 @@
   * https://csfieldguide.org.nz/en/interactives/rsa-key-generator/
 
     * 
+
+* On deploy
+
+  * copy/create keys folder in server

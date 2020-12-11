@@ -16,7 +16,7 @@ export default database.define<IAccountModel>('account', {
   name: {
     type: Sequelize.STRING(150),
     allowNull: false,
-    unique: true,
+    unique: false,
   },
   email: {
     type: Sequelize.STRING(150),
