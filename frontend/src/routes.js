@@ -1,20 +1,13 @@
 import React from 'react';
 import SignIn from './pages/public/SignIn';
 import SignUp from './pages/public/SignUp';
+import Dashboard from './pages/secure/Dashboard';
 
 import {
   BrowserRouter as Router,
   Switch, Route, Link, useParams, useRouteMatch
 } from 'react-router-dom';
 
-function Home() {
-  return (
-    <div>
-      <Menu></Menu>
-      <h2>Home</h2>
-    </div>
-  )
-}
 
 function Contact() {
   let { contactId } = useParams();
@@ -105,7 +98,7 @@ export default function Routes() {
     <Router>
       <div>
         <Switch>
-          <Route exact path="/" component={Home} />
+          <Route exact path="/" component={Dashboard} />
           <Route path="/contacts" component={Contatos} />
           <Route path="/messages" component={Messages} />
           <Route path="/signin" component={SignIn} />

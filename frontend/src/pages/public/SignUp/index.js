@@ -2,10 +2,10 @@ import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { Button, Form, Container, Row, Col, Alert } from 'react-bootstrap';
 
-import api from '../../../services/api';
+import AccountsService from '../../../services/accounts';
 import Logo from '../../../assets/logo.png';
 
-import { BoxContent, BoxForm } from './styles';
+import { BoxContent, BoxForm } from '../../../shared/styles';
 
 class SignUp extends React.Component {
 
@@ -15,20 +15,19 @@ class SignUp extends React.Component {
     password: '',
     domain: '',
     error: '',
-    isLoading: false,
+    // isLoading: false,
   }
 
   handleSignUp = async (event) => {
     event.preventDefault();
-    const { name, email, password, domain, isLoading } = this.state;
+    const { name, email, password, domain } = this.state;
 
     if (!name || !email || !domain || !password) {
       this.setState({ error: "Informe todos os campos para se cadastrar." })
     } else {
       try {
-        await api.post('accounts', {
-          name, email, password, domain
-        });
+        const service = new AccountsService();
+        await service.signup({ name, email, password, domain });
         this.props.history.push("/signin");
       } catch (error) {
         console.log(`[handleSignUp] ERROR: ${error}`)
@@ -99,7 +98,7 @@ class SignUp extends React.Component {
             </BoxContent>
           </Col>
         </Row>
-      </Container >
+      </Container>
     )
   }
 

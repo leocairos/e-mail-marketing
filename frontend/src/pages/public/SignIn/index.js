@@ -2,11 +2,11 @@ import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { Button, Form, Container, Row, Col } from 'react-bootstrap';
 
-import api from '../../../services/api';
+import AccountsService from '../../../services/accounts';
 import { login } from '../../../services/auth';
 import Logo from '../../../assets/logo.png';
 
-import { BoxContent, BoxForm } from './styles';
+import { BoxContent, BoxForm } from '../../../shared/styles';
 
 class SignIn extends React.Component {
 
@@ -25,9 +25,8 @@ class SignIn extends React.Component {
       this.setState({ error: "Informe e-mail e senha se autenticar." })
     } else {
       try {
-        const response = await api.post('accounts/login', {
-          email, password
-        });
+        const service = new AccountsService();
+        const response = await service.signin(email, password);
         login(response.data.token);
         this.props.history.push("/");
       } catch (error) {
@@ -75,7 +74,7 @@ class SignIn extends React.Component {
             </BoxContent>
           </Col>
         </Row>
-      </Container >
+      </Container>
     )
   }
 

@@ -12,6 +12,9 @@
   * mysql> CREATE DATABASE emailmarketing;
 
 
+* Field password in Accounts need 60 characters because hash
+
+
 * Key Generator
 
   * https://csfieldguide.org.nz/en/interactives/rsa-key-generator/
