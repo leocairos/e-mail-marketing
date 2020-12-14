@@ -24,3 +24,12 @@
 * On deploy
 
   * copy/create keys folder in server
+
+
+* Links
+
+  * https://favicon.io/favicon-converter/
+  * https://convertio.co/
+  * https://jwt.io/
+  * https://www.freenom.com/
+  

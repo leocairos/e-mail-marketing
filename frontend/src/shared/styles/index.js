@@ -7,8 +7,8 @@ export const BoxContent = styled.div`
 
 export const BoxForm = styled.div`
   padding: 30px 15px;
-  background-color: #f1f1f1;
-  border-top: solid 3px #f31300;
+  background-color: #DCEAFF;
+  border-top: solid 3px #6892FF;
 `;
 
 export const PageContent = styled.div`

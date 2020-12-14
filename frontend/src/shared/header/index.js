@@ -20,7 +20,7 @@ function MainMenu({ history }) {
       <Navbar>
         <Container>
           <Navbar.Brand href="/">
-            <Logo src={Icone} alt="Email Marketing" />
+            <Logo src={Icone} alt="Mail Spider" />
           </Navbar.Brand>
           <Nav>
             <Nav.Link href="/contacts">Contatos</Nav.Link>

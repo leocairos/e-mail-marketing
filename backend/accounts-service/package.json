@@ -13,7 +13,8 @@
     "test": "jest"
   },
   "keywords": [],
-  "author": "",
+  "homepage": ".",
+  "author": "leocairos",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",

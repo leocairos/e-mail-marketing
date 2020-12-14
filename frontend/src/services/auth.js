@@ -1,4 +1,4 @@
-export const TOKEN_KEY = "mailmarketing-token";
+export const TOKEN_KEY = "mail-spider-token";
 
 export const isAuthenticated = () => localStorage.getItem(TOKEN_KEY) !== null;
 
