@@ -24,6 +24,29 @@
 * On deploy
 
   * copy/create keys folder in server
+  
+  * $ sudo cp /opt/bitnami/apache/conf/vhosts/sample-http-vhost.conf.disabled /opt/bitnami/apache/conf/vhosts/sample-http-vhost.conf
+  
+  * $ sudo cp /opt/bitnami/apache/conf/vhosts/sample-https-vhost.conf.disabled /opt/bitnami/apache/conf/vhosts/sample-https-vhost.conf
+
+  * $ sudo /opt/bitnami/bncert-tool
+
+
+  
+  * Restart Apache:
+    * $ sudo /opt/bitnami/ctlscript.sh restart apache
+  * Apache config:
+    * $sudo nano /opt/bitnami/apache/conf/vhosts/sample-http-vhost
+.conf
+
+
+### PM2
+
+  * $ sudo npm i -g pm2
+  * $ sudo pm2 startup
+  * ../backend/accounts-service$ sudo pm2 start npm --name accounts-service -- start
+  * ../backend/contacts-service$ sudo pm2 start npm --name contacts-service -- start
+
 
 
 * Links

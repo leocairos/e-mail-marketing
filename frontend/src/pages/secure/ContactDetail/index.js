@@ -1,6 +1,6 @@
 import React from 'react';
-import { withRouter, Link } from 'react-router-dom';
-import { Container, Button, Form, Alert, Row, Col } from 'react-bootstrap';
+import { withRouter } from 'react-router-dom';
+import { Container, Alert } from 'react-bootstrap';
 
 import Header from '../../../shared/header';
 import { PageContent } from '../../../shared/styles';
