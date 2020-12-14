@@ -5,8 +5,13 @@ import cors from 'cors';
 
 export default (router: Router) => {
   const app = express();
+  const corsOptions = {
+    origin: '*',
+    optionsSuccessStatus: 200
+  };
+
   app.use(helmet());
-  app.use(cors());
+  app.use(cors(corsOptions));
   app.use(bodyParser.json());
 
   app.use(router);
