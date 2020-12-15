@@ -19,4 +19,8 @@ router.patch('/contacts/:id',
   middlewaresCommons.validateAuth, validateUpdateContactSchema,
   contactsController.setContact)
 
+router.get('/health', (req, res, next) => {
+  res.json({ message: 'Contacts API is up and running!' });
+})
+
 export default router; 
