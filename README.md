@@ -21,7 +21,7 @@
 
     * 
 
-* On deploy
+## On deploy
 
   * copy/create keys folder in server
   
@@ -31,12 +31,12 @@
 
   * $ sudo /opt/bitnami/bncert-tool
 
-
+  *  curl -i localhost:4001/health
   
   * Restart Apache:
     * $ sudo /opt/bitnami/ctlscript.sh restart apache
   * Apache config:
-    * $sudo nano /opt/bitnami/apache/conf/vhosts/sample-http-vhost
+    * $ sudo nano /opt/bitnami/apache/conf/vhosts/sample-https-vhost.conf
 .conf
 
 

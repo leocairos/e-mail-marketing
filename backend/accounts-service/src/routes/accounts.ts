@@ -8,6 +8,9 @@ import {
 
 const router = Router();
 
+router.get('/health/', (req, res, next) => {
+  res.json({ message: 'Accounts API is up and running!' });
+})
 router.get('/accounts/', validateAuthentication, accountsController.getAccounts);
 
 router.get('/accounts/:id', validateAuthentication, validateAuthorization, accountsController.getAccount);
@@ -22,9 +25,5 @@ router.post('/accounts/login', validateLoginSchema, accountsController.loginAcco
 router.post('/accounts/logout', validateAuthentication, accountsController.logoutAccount);
 
 router.delete('/accounts/:id', validateAuthentication, validateAuthorization, accountsController.deleteAccount);
-
-router.get('/health', (req, res, next) => {
-  res.json({ message: 'Accounts API is up and running!' });
-})
 
 export default router;
