@@ -37,7 +37,37 @@
     * $ sudo /opt/bitnami/ctlscript.sh restart apache
   * Apache config:
     * $ sudo nano /opt/bitnami/apache/conf/vhosts/sample-https-vhost.conf
-.conf
+    ```    
+    <VirtualHost _default_:443>
+      ServerAlias *
+      SSLEngine on
+      SSLCertificateFile "/opt/bitnami/apache/conf/api-accounts.mailspider.ml.crt"
+      SSLCertificateKeyFile "/opt/bitnami/apache/conf/api-accounts.mailspider.ml.key"
+      DocumentRoot "/home/bitnami/projects/sample/public"
+      # BEGIN: Configuration for letsencrypt
+      Include "/opt/bitnami/apps/letsencrypt/conf/httpd-prefix.conf"
+      # END: Configuration for letsencrypt
+      # BEGIN: Support domain renewal when using mod_proxy without Location
+      <IfModule mod_proxy.c>
+        ProxyPass /.well-known !
+      </IfModule>
+      # END: Support domain renewal when using mod_proxy without Location
+      <Directory "/home/bitnami/projects/sample/public">
+        Require all granted
+      </Directory>
+        ProxyPass /accounts http://localhost:4000/accounts
+        ProxyPassReverse /accounts http://localhost:4000/
+        ProxyPass /contacts http://localhost:4001/contacts
+        ProxyPassReverse /contacts http://localhost:4001/contacts
+      # BEGIN: Support domain renewal when using mod_proxy within Location
+      <Location /.well-known>
+      <IfModule mod_proxy.c>
+        ProxyPass !
+      </IfModule>
+      </Location>
+      # END: Support domain renewal when using mod_proxy within Location
+    </VirtualHost>
+    ```
 
 
 ### PM2
