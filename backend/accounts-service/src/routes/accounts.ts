@@ -8,7 +8,7 @@ import {
 
 const router = Router();
 
-router.get('/health/', (req, res, next) => {
+router.get('/accounts/health', (req, res, next) => {
   res.json({ message: 'Accounts API is up and running!' });
 })
 router.get('/accounts/', validateAuthentication, accountsController.getAccounts);

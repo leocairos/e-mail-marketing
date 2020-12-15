@@ -48,7 +48,7 @@ class SignUp extends React.Component {
         <Row className="justify-content-md-center">
           <Col xs={12} md={6}>
             <BoxContent>
-              <img src={Logo} alt="Mail Spider">
+              <img src={Logo} alt="Mail Spider" style={{ maxHeight: 250 }}>
               </img>
             </BoxContent>
             <BoxForm>

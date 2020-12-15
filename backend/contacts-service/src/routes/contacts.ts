@@ -7,7 +7,7 @@ import contactsController from '../controllers/contacts'
 
 const router = Router();
 
-router.get('/health/', (req, res, next) => {
+router.get('/contacts/health', (req, res, next) => {
   res.json({ message: 'Contacts API is up and running!' });
 })
 
