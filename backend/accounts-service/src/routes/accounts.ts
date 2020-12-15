@@ -23,4 +23,8 @@ router.post('/accounts/logout', validateAuthentication, accountsController.logou
 
 router.delete('/accounts/:id', validateAuthentication, validateAuthorization, accountsController.deleteAccount);
 
+router.get('/health', (req, res, next) => {
+  res.json({ message: 'Accounts API is up and running!' });
+})
+
 export default router;
