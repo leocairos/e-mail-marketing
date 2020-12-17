@@ -5,7 +5,7 @@ import path from 'path';
 
 import authCommons, { Token } from 'ms-commons/api/auth';
 
-const privateKey = fs.readFileSync(path.resolve(__dirname, '../keys/private.key'), 'utf-8');
+const privateKey = fs.readFileSync(path.join(authCommons.findKeysPath(__dirname), 'private.key'), 'utf-8');
 const jwtExpires = parseInt(`${process.env.JWT_EXPIRES}`);
 const jwtAlgorithm = 'RS256';
 

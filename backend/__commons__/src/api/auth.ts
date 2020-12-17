@@ -2,7 +2,13 @@ import jwt, { VerifyOptions } from 'jsonwebtoken';
 import fs from 'fs';
 import path from 'path';
 
-const publicKey = fs.readFileSync(path.resolve(__dirname, '../../keys/public.key'), 'utf-8');
+function findKeysPath(currentPath: string): string {
+  const KeysPath = path.join(currentPath, 'keys');
+  if (fs.existsSync(KeysPath)) return KeysPath;
+  else return findKeysPath(path.join(currentPath, '..'));
+}
+
+const publicKey = fs.readFileSync(path.join(findKeysPath(__dirname), 'public.key'), 'utf-8');
 const jwtAlgorithm = 'RS256';
 
 export type Token = { accountId: number };
@@ -17,4 +23,4 @@ async function verify(token: string) {
   }
 }
 
-export default { verify };
+export default { verify, findKeysPath };

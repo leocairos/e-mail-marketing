@@ -11,22 +11,26 @@ function validateSchema(schema: Joi.ObjectSchema<any>, req: Request, res: Respon
 
     const message = error?.details.map(item => item.message).join(',');
     console.log('validateSchema', message);
-    res.status(422).end();
+    res.status(422).json({
+      entity: req.body,
+      message
+    });
   }
 }
 
 async function validateAuth(req: Request, res: Response, next: any) {
   try {
     const token = req.headers['x-access-token'] as string;
-    if (!token) return res.status(401).end();
+    if (!token) return res.sendStatus(401);
 
     const payload = await auth.verify(token);
-    if (!payload) return res.status(401).end();
+    if (!payload) return res.sendStatus(401);
 
     res.locals.payload = payload;
     next();
   } catch (error) {
     console.log(`validate: ${error}`)
+    return res.sendStatus(400);
   }
 }
 

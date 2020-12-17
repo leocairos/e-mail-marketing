@@ -7,10 +7,6 @@ import contactsController from '../controllers/contacts'
 
 const router = Router();
 
-router.get('/contacts/health', (req, res, next) => {
-  res.json({ message: 'Contacts API is up and running!' });
-})
-
 router.get('/contacts/:id', middlewaresCommons.validateAuth, contactsController.getContact)
 
 router.get('/contacts/', middlewaresCommons.validateAuth, contactsController.getContacts)
