@@ -1,41 +1,40 @@
 import Joi from 'joi';
 
-const contactSchema = Joi.object({
+const messageSchema = Joi.object({
   id: Joi.number()
     .integer()
     .min(1),
   accountId: Joi.number()
     .integer()
     .min(1),
-  name: Joi.string()
+  subject: Joi.string()
     .min(3)
     .max(150)
     .required(),
-  email: Joi.string()
-    .email()
+  body: Joi.string()
     .min(8)
-    .max(150)
+    .max(65535)
     .required(),
-  phone: Joi.string()
-    .pattern(/^[0-9]{10,11}$/),
+  sendDate: Joi.date(),
   status: Joi.number()
     .integer()
     .min(100)
-    .max(400),
+    .max(300),
 });
 
-const contactUpdateSchema = Joi.object({
-  name: Joi.string()
+const messageUpdateSchema = Joi.object({
+  subject: Joi.string()
     .min(3)
-    .max(150)
-    .required(),
-  phone: Joi.string()
-    .pattern(/^[0-9]{10,11}$/),
+    .max(150),
+  body: Joi.string()
+    .min(8)
+    .max(65535),
+  sendDate: Joi.date(),
   status: Joi.number()
     .integer()
     .min(100)
-    .max(400),
+    .max(300),
 });
 
 
-export { contactSchema, contactUpdateSchema }
+export { messageSchema, messageUpdateSchema }

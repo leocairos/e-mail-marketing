@@ -4,9 +4,11 @@ import repository from '../models/accountRepository';
 import auth from '../auth';
 import controllerCommons from 'ms-commons/api/controllers/controller';
 import { Token } from 'ms-commons/api/auth';
+import { AccountStatus } from '../models/accountStatus';
 
 async function getAccounts(req: Request, res: Response, next: any) {
-  const accounts: IAccount[] = await repository.findAll();
+  const includeRemoved = req.query.includeRemoved === 'true';
+  const accounts: IAccount[] = await repository.findAll(includeRemoved);
 
   res.json(accounts.map(item => {
     item.password = '';
@@ -110,14 +112,22 @@ async function deleteAccount(req: Request, res: Response, next: any) {
     const token = controllerCommons.getToken(res) as Token;
     if (accountId !== token.accountId) return res.sendStatus(403);
 
-    await repository.remove(accountId);
-    return res.sendStatus(204); //NO CONTENT
+    if (req.query.force === 'true') {
+      await repository.remove(accountId);
+      return res.sendStatus(204); //NO CONTENT
+    }
+    else {
+      const accountParams = { status: AccountStatus.REMOVED } as IAccount;
+      const updatedAccount = await repository.set(accountId, accountParams);
+      return res.status(200).json(updatedAccount);
+    }
   } catch (error) {
     console.log(`deleteAccount: ${error}`);
     return res.sendStatus(400);
   }
 
 }
+
 export default {
   getAccounts,
   getAccount,

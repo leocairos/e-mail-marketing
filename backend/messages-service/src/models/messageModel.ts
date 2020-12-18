@@ -22,7 +22,7 @@ const Message = database.define<IMessageModel>('message', {
     allowNull: false,
   },
   body: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
     allowNull: false,
   },
   status: {

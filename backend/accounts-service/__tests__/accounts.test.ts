@@ -4,6 +4,7 @@ import { IAccount } from '../src/models/account';
 
 import auth from '../src/auth';
 import repository from '../src/models/accountRepository';
+import { AccountStatus } from '../src/models/accountStatus';
 const testEmail = 'jest@account.com';
 const testEmail2 = 'jest2@account.com';
 const hashPassword = '$2a$10$hDEgCZwBW3lTBIWou2N4YuYkrD5y25K7DV5nTeaF5CSFDpFsNULjq'; //senha1234
@@ -141,6 +142,15 @@ describe('Testando rota do accounts', () => {
       .set('x-access-token', token);
 
     expect(resultado.status).toEqual(200);
+    expect(resultado.body.status).toEqual(AccountStatus.REMOVED);
+  })
+
+  it('DELETE /accounts/:id?force=true - Deve retornar statusCode 204', async () => {
+    const resultado = await request(app)
+      .delete(`/accounts/${testId}?force=true`)
+      .set('x-access-token', token);
+
+    expect(resultado.status).toEqual(204);
   })
 
   it('DELETE /accounts/:id - Deve retornar statusCode 403', async () => {

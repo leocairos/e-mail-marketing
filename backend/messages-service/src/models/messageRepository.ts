@@ -1,8 +1,17 @@
 import { IMessage } from './message';
 import messageModel, { IMessageModel } from './messageModel';
+import { MessageStatus } from './messageStatus';
 
-function findAll(accountId: number) {
-  return messageModel.findAll<IMessageModel>({ where: { accountId } });
+function findAll(accountId: number, includeRemoved: boolean) {
+  if (includeRemoved)
+    return messageModel.findAll<IMessageModel>({ where: { accountId } });
+  else
+    return messageModel.findAll<IMessageModel>({
+      where: {
+        accountId,
+        status: [MessageStatus.CREATED, MessageStatus.SENT]
+      }
+    });
 }
 
 function findById(messageId: number, accountId: number) {
