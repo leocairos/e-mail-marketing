@@ -6,7 +6,7 @@ interface IContactCreationAttributes extends Optional<IContact, "id"> { }
 
 export interface IContactModel extends Model<IContact, IContactCreationAttributes>, IContact { }
 
-export default database.define<IContactModel>('contact', {
+const Contact = database.define<IContactModel>('contact', {
   id: {
     type: Sequelize.INTEGER.UNSIGNED,
     primaryKey: true,
@@ -40,3 +40,7 @@ export default database.define<IContactModel>('contact', {
     fields: ['accountId', 'email']
   }]
 })
+
+Contact.sync();
+
+export default Contact;

@@ -6,7 +6,7 @@ interface IAccountCreationAttributes extends Optional<IAccount, "id"> { }
 
 export interface IAccountModel extends Model<IAccount, IAccountCreationAttributes>, IAccount { }
 
-export default database.define<IAccountModel>('account', {
+const Account = database.define<IAccountModel>('account', {
   id: {
     type: Sequelize.INTEGER.UNSIGNED,
     primaryKey: true,
@@ -37,3 +37,7 @@ export default database.define<IAccountModel>('account', {
     allowNull: false,
   },
 })
+
+Account.sync();
+
+export default Account;

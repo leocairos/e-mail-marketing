@@ -24,8 +24,6 @@ export default (router: Router) => {
   app.use(cors(corsOptions));
   app.use(express.json());
 
-  console.log(`COMMONS: /${process.env.MS_PATH}/health/`)
-
   app.get(`/${process.env.MS_PATH}/health/`, (req, res, next) => {
     res.json({ message: `${process.env.MS_NAME} is up and running!` });
   })

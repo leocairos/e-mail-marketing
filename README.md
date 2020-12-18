@@ -76,6 +76,7 @@
   * $ sudo pm2 startup
   * ../backend/accounts-service$ sudo pm2 start npm --name accounts-service -- start
   * ../backend/contacts-service$ sudo pm2 start npm --name contacts-service -- start
+  * $ sudo pm2 restart accounts-service --update-env
   * $ sudo pm2 restart contacts-service --update-env
 
 
