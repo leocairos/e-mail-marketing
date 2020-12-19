@@ -11,12 +11,12 @@ function findKeysPath(currentPath: string): string {
 const publicKey = fs.readFileSync(path.join(findKeysPath(__dirname), 'public.key'), 'utf-8');
 const jwtAlgorithm = 'RS256';
 
-export type Token = { accountId: number };
+export type Token = { accountId: number, jwt?: string };
 
 async function verify(token: string) {
   try {
     const decoded: Token = await jwt.verify(token, publicKey, { algorithm: [jwtAlgorithm] } as VerifyOptions) as Token;
-    return { accountId: decoded.accountId }
+    return { accountId: decoded.accountId, jwt: token }
   } catch (error) {
     console.log(`verify: ${error}`);
     return null;
