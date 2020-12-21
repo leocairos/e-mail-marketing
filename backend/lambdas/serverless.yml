@@ -1,0 +1,29 @@
+service: mailspider
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "sqs:*"
+      Resource: "*"
+  tags:
+    STAGE: prd
+    PROJECT: mailspider
+
+functions:
+  hello:
+    handler: src/handlers/hello/handler.hello
+
+  send-message:
+    handler: src/handlers/send-message/handler.sendMessage
+    description: "Envia e-mail"
+    memorySize: 128
+    timeout: 10
+    events:
+      - sqs:
+        arn: arn:aws:sqs:us-east-1:661525709166:mailspider.fifo
+        batchSize: 1

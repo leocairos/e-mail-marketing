@@ -88,3 +88,26 @@
   * https://jwt.io/
   * https://www.freenom.com/
   
+## Serverless
+
+* Install Global
+  * $ npm i -g serverless
+
+* Initialize project Serverless
+  * $ serverless create --template aws-nodejs
+
+* Install AWS CLI
+  * Install (windows by msi package)
+  * $ aws configure
+    ```
+    AWS Access Key ID [None]: 
+    AWS Secret Access Key [None]: 
+    Default region name [None]: 
+    Default output format [None]: json
+    ```
+* Deploy serverless
+  * $ serverless deploy
+
+* In AWS Console
+  * Navigate to lambda services to check deploy
+
