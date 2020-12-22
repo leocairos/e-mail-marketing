@@ -8,7 +8,8 @@ async function sendMessage(event) {
       console.log('Função de envio foi chamado pelo SQS');
 
       const payloadParsed = await sqsParse.parseMessages(event);
-      const payload = JSON.parse(payloadParsed[0]);
+      //const payload = JSON.parse(payloadParsed[0]);
+      const payload = payloadParsed[0];
 
       console.log(`messageId: ${payload.messageId}`);
       console.log(`accountId: ${payload.accountId}`);

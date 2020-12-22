@@ -87,6 +87,8 @@
   * https://convertio.co/
   * https://jwt.io/
   * https://www.freenom.com/
+  * https://onlinetexttools.com/json-stringify-text
+    * text stringifier world's simplest text tool
   
 ## Serverless
 
@@ -110,4 +112,5 @@
 
 * In AWS Console
   * Navigate to lambda services to check deploy
+
 
