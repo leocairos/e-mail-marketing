@@ -4,6 +4,7 @@ import controllerCommons from 'ms-commons/api/controllers/controller';
 import { Token } from 'ms-commons/api/auth';
 
 import { accountSchema, accountUpdateSchema, loginSchema } from '../models/accountSchemas';
+import { accountEmailSchema, accountEmailUpdateSchema } from '../models/accountEmailSchemas';
 
 function validateAccountSchema(req: Request, res: Response, next: any) {
   return commonsMiddlerware.validateSchema(accountSchema, req, res, next);
@@ -31,10 +32,20 @@ async function validateAuthorization(req: Request, res: Response, next: any) {
   next();
 }
 
+function validateAccountEmailSchema(req: Request, res: Response, next: any) {
+  return commonsMiddlerware.validateSchema(accountEmailSchema, req, res, next);
+}
+
+function validateAccountUpdateEmailSchema(req: Request, res: Response, next: any) {
+  return commonsMiddlerware.validateSchema(accountEmailUpdateSchema, req, res, next);
+}
+
 export {
   validateAccountSchema,
   validateUpdateAccountSchema,
   validateLoginSchema,
   validateAuthentication,
-  validateAuthorization
+  validateAuthorization,
+  validateAccountEmailSchema,
+  validateAccountUpdateEmailSchema
 }

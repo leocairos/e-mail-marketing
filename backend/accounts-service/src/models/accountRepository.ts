@@ -1,5 +1,6 @@
 import { DestroyOptions } from 'sequelize/types';
 import { IAccount } from './account';
+import AccountEmailModel from './accountEmailModel';
 import accountModel, { IAccountModel } from './accountModel';
 import { AccountStatus } from './accountStatus';
 
@@ -23,6 +24,10 @@ function findByEmail(emailFilter: string) {
 
 function findById(id: number) {
   return accountModel.findByPk<IAccountModel>(id);
+}
+
+function findByIdWithEmails(id: number) {
+  return accountModel.findByPk<IAccountModel>(id, { include: AccountEmailModel });
 }
 
 function add(account: IAccount) {
@@ -54,4 +59,7 @@ function removeByEmail(emailToDelete: string) {
   return accountModel.destroy({ where: { email: emailToDelete } } as DestroyOptions<IAccount>)
 }
 
-export default { findAll, findByEmail, findById, add, set, remove, removeByEmail };
+export default {
+  findAll, findByEmail, findById, findByIdWithEmails,
+  add, set, remove, removeByEmail
+};
