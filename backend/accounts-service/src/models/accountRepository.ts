@@ -39,8 +39,6 @@ async function set(id: number, account: IAccount) {
   if (originalAccount !== null) {
     if (account.name)
       originalAccount.name = account.name;
-    if (account.domain)
-      originalAccount.domain = account.domain;
     if (account.status)
       originalAccount.status = account.status;
     if (account.password)

@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { IAccount } from '../models/account';
-import repository from '../models/accountRepository';
 import auth from '../auth';
 import controllerCommons from 'ms-commons/api/controllers/controller';
 import { Token } from 'ms-commons/api/auth';
@@ -8,11 +7,11 @@ import { AccountStatus } from '../models/accountStatus';
 import emailsService, { AccountSettings } from 'ms-commons/clients/emailService';
 import accountRepository from '../models/accountRepository';
 import { IAccountEmail } from '../models/accountEmail';
-import accountEmailRepository from 'src/models/accountEmailRepository';
+import accountEmailRepository from '../models/accountEmailRepository';
 
 async function getAccounts(req: Request, res: Response, next: any) {
   const includeRemoved = req.query.includeRemoved === 'true';
-  const accounts: IAccount[] = await repository.findAll(includeRemoved);
+  const accounts: IAccount[] = await accountRepository.findAll(includeRemoved);
 
   res.json(accounts.map(item => {
     item.password = '';
@@ -28,7 +27,7 @@ async function getAccount(req: Request, res: Response, next: any) {
     const token = controllerCommons.getToken(res) as Token;
     if (accountId !== token.accountId) return res.sendStatus(403);
 
-    const account = await repository.findById(accountId);
+    const account = await accountRepository.findById(accountId);
     if (account === null) {
       return res.sendStatus(404);
     } else {
@@ -45,7 +44,7 @@ async function addAccount(req: Request, res: Response, next: any) {
   try {
     const newAccount = req.body as IAccount;
     newAccount.password = auth.hashPassword(newAccount.password);
-    const result = await repository.add(newAccount);
+    const result = await accountRepository.add(newAccount);
     newAccount.id = result.id;
     newAccount.password = '';
 
@@ -60,18 +59,22 @@ async function addAccount(req: Request, res: Response, next: any) {
 
 async function setAccount(req: Request, res: Response, next: any) {
   try {
+    const accountParams = req.body as IAccount;
+    if (accountParams.status === AccountStatus.REMOVED)
+      return deleteAccount(req, res, next);
+
     const accountId = parseInt(req.params.id);
     if (!accountId) return res.status(400).json({ message: 'id is required' });
 
     const token = controllerCommons.getToken(res) as Token;
     if (accountId !== token.accountId) return res.sendStatus(403);
 
-    const accountParams = req.body as IAccount;
+
     if (accountParams.password) {
       accountParams.password = auth.hashPassword(accountParams.password);
     }
 
-    const updatedAccount = await repository.set(accountId, accountParams);
+    const updatedAccount = await accountRepository.set(accountId, accountParams);
 
     if (updatedAccount !== null) {
       updatedAccount.password = '';
@@ -90,7 +93,7 @@ async function setAccount(req: Request, res: Response, next: any) {
 async function loginAccount(req: Request, res: Response, next: any) {
   try {
     const loginParams = req.body as IAccount;
-    const account = await repository.findByEmail(loginParams.email);
+    const account = await accountRepository.findByEmail(loginParams.email);
     if (account !== null) {
       const isValid = auth.comparePassword(loginParams.password, account.password)
         && account.status !== AccountStatus.REMOVED;
@@ -120,17 +123,26 @@ async function deleteAccount(req: Request, res: Response, next: any) {
     const token = controllerCommons.getToken(res) as Token;
     if (accountId !== token.accountId) return res.sendStatus(403);
 
-    const account = await accountRepository.findById(accountId);
+    const account = await accountRepository.findByIdWithEmails(accountId);
     if (account === null) return res.sendStatus(404);
+
+    const accountEmails = account.get('accountEmails', { plain: true }) as IAccountEmail[];
+    if (accountEmails && accountEmails.length > 0) {
+      const promises = accountEmails.map(item => {
+        return emailsService.removeEmailIdentity(item.email);
+      });
+      await Promise.all(promises);
+      await accountEmailRepository.removeAll(accountId);
+    }
     await emailsService.removeEmailIdentity(account!.domain);
 
     if (req.query.force === 'true') {
-      await repository.remove(accountId);
+      await accountRepository.remove(accountId);
       return res.sendStatus(204); //NO CONTENT
     }
     else {
       const accountParams = { status: AccountStatus.REMOVED } as IAccount;
-      const updatedAccount = await repository.set(accountId, accountParams);
+      const updatedAccount = await accountRepository.set(accountId, accountParams);
       if (updatedAccount === null) return res.sendStatus(404);
       updatedAccount.password = ''
       return res.status(200).json(updatedAccount);
@@ -219,6 +231,94 @@ async function addAccountEmail(req: Request, res: Response, next: any) {
   }
 }
 
+async function getAccountEmails(req: Request, res: Response, next: any) {
+  try {
+    const token = controllerCommons.getToken(res) as Token;
+    const account = await accountRepository.findByIdWithEmails(token.accountId);
+
+    if (!account) return res.sendStatus(404);
+
+    let emails: string[] = [];
+    const accountsEmails = account.get('accountEmails', { plain: true }) as IAccountEmail[];
+    if (accountsEmails && accountsEmails.length > 0)
+      emails = accountsEmails.map(item => item.email);
+
+    const settings = await emailsService.getEmailSettings(emails);
+
+    return res.json(settings);
+  } catch (error) {
+    console.log(`getAccountEmails: ${error}`);
+    res.sendStatus(400);
+  }
+}
+
+async function getAccountEmail(req: Request, res: Response, next: any) {
+  try {
+    const id = parseInt(req.params.id);
+    if (!id) return res.status(400).json({ message: 'id is required' });
+
+    const token = controllerCommons.getToken(res) as Token;
+    const accountEmail = await accountEmailRepository
+      .findById(id, token.accountId, true) as IAccountEmail;
+
+    if (!accountEmail) return res.sendStatus(404);
+
+    const settings = await emailsService.getEmailSettings([accountEmail.email]);
+    if (!settings || settings.length === 0) return res.sendStatus(404);
+
+    accountEmail.settings = settings[0];
+    return res.json(accountEmail);
+  } catch (error) {
+    console.log(`getAccountEmail: ${error}`);
+    res.sendStatus(400);
+  }
+}
+
+async function setAccountEmail(req: Request, res: Response, next: any) {
+  try {
+    const accountEmailId = parseInt(req.params.id);
+    if (!accountEmailId) return res.status(400).json({ message: 'id is required' });
+
+    const token = controllerCommons.getToken(res) as Token;
+    const accountEmailParams = req.body as IAccountEmail;
+
+    const updatedAccountEmail =
+      await accountEmailRepository
+        .set(accountEmailId, token.accountId, accountEmailParams);
+
+    if (setAccountEmail !== null) {
+      res.status(200).json(updatedAccountEmail);
+    } else {
+      res.sendStatus(404);
+    }
+
+  } catch (error) {
+    console.log(`setAccountEmail: ${error}`);
+    res.sendStatus(400);
+  }
+}
+
+async function deleteAccountEmail(req: Request, res: Response, next: any) {
+  try {
+    const accountEmailId = parseInt(req.params.id);
+    if (!accountEmailId) return res.status(400).json({ message: 'id is required' });
+
+    const token = controllerCommons.getToken(res) as Token;
+
+    const accountEmail = await accountEmailRepository.findById(accountEmailId, token.accountId);
+    if (accountEmail === null) return res.sendStatus(404);
+
+    await emailsService.removeEmailIdentity(accountEmail!.email);
+
+    await accountEmailRepository.remove(accountEmailId, token.accountId);
+    return res.sendStatus(204); //NO CONTENT
+
+  } catch (error) {
+    console.log(`deleteAccountEmail: ${error}`);
+    return res.sendStatus(400);
+  }
+}
+
 export default {
   getAccounts,
   getAccount,
@@ -229,5 +329,9 @@ export default {
   deleteAccount,
   getAccountSettings,
   createAccountSettings,
-  addAccountEmail
+  addAccountEmail,
+  getAccountEmails,
+  getAccountEmail,
+  setAccountEmail,
+  deleteAccountEmail
 };
