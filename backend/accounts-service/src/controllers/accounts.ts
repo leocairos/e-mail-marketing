@@ -286,7 +286,7 @@ async function setAccountEmail(req: Request, res: Response, next: any) {
       await accountEmailRepository
         .set(accountEmailId, token.accountId, accountEmailParams);
 
-    if (setAccountEmail !== null) {
+    if (updatedAccountEmail !== null) {
       res.status(200).json(updatedAccountEmail);
     } else {
       res.sendStatus(404);
@@ -311,7 +311,7 @@ async function deleteAccountEmail(req: Request, res: Response, next: any) {
     await emailsService.removeEmailIdentity(accountEmail!.email);
 
     await accountEmailRepository.remove(accountEmailId, token.accountId);
-    return res.sendStatus(204); //NO CONTENT
+    return res.sendStatus(200); //NO CONTENT
 
   } catch (error) {
     console.log(`deleteAccountEmail: ${error}`);

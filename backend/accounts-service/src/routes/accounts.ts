@@ -14,7 +14,7 @@ router.get('/accounts/settings', validateAuthentication, accountsController.getA
 router.get('/accounts/:id', validateAuthentication, validateAuthorization, accountsController.getAccount);
 router.get('/accounts/', validateAuthentication, accountsController.getAccounts);
 
-router.patch('/accounts/settings/accountEmail/:id', validateAuthentication, validateAccountUpdateEmailSchema,
+router.patch('/accounts/settings/accountEmails/:id', validateAuthentication, validateAccountUpdateEmailSchema,
   accountsController.setAccountEmail);
 router.patch('/accounts/:id', validateAuthentication, validateUpdateAccountSchema,
   accountsController.setAccount);
