@@ -7,18 +7,18 @@ import contactsController from '../controllers/contacts'
 
 const router = Router();
 
-router.get('/contacts/:id', middlewaresCommons.validateAuth, contactsController.getContact)
+router.get('/contacts/:id', middlewaresCommons.validateAccountAuth, contactsController.getContact)
 
-router.get('/contacts/', middlewaresCommons.validateAuth, contactsController.getContacts)
+router.get('/contacts/', middlewaresCommons.validateAccountAuth, contactsController.getContacts)
 
 router.post('/contacts/',
-  middlewaresCommons.validateAuth, validateContactSchema,
+  middlewaresCommons.validateAccountAuth, validateContactSchema,
   contactsController.addContact)
 
 router.patch('/contacts/:id',
-  middlewaresCommons.validateAuth, validateUpdateContactSchema,
+  middlewaresCommons.validateAccountAuth, validateUpdateContactSchema,
   contactsController.setContact)
 
-router.delete('/contacts/:id', middlewaresCommons.validateAuth, contactsController.deleteContact)
+router.delete('/contacts/:id', middlewaresCommons.validateAccountAuth, contactsController.deleteContact)
 
 export default router; 

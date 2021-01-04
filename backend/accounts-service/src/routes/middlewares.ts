@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import commonsMiddlerware from 'ms-commons/api/routes/middlewares';
 import controllerCommons from 'ms-commons/api/controllers/controller';
-import { Token } from 'ms-commons/api/auth';
+import { Token } from 'ms-commons/api/auth/accountsAuth';
 
 import { accountSchema, accountUpdateSchema, loginSchema } from '../models/accountSchemas';
 import { accountEmailSchema, accountEmailUpdateSchema } from '../models/accountEmailSchemas';
@@ -19,7 +19,7 @@ function validateLoginSchema(req: Request, res: Response, next: any) {
 }
 
 async function validateAuthentication(req: Request, res: Response, next: any) {
-  return commonsMiddlerware.validateAuth(req, res, next);
+  return commonsMiddlerware.validateAccountAuth(req, res, next);
 }
 
 async function validateAuthorization(req: Request, res: Response, next: any) {

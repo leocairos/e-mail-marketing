@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import repository from '../models/contactRepository';
 import controllerCommons from 'ms-commons/api/controllers/controller';
-import { Token } from 'ms-commons/api/auth';
+import { Token } from 'ms-commons/api/auth/accountsAuth';
 import { IContact } from '../models/contact';
 import { ContactStatus } from '../models/contactStatus';
 

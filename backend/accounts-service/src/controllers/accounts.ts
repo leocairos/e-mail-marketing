@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { IAccount } from '../models/account';
 import auth from '../auth';
 import controllerCommons from 'ms-commons/api/controllers/controller';
-import { Token } from 'ms-commons/api/auth';
+import { Token } from 'ms-commons/api/auth/accountsAuth';
 import { AccountStatus } from '../models/accountStatus';
 import emailsService, { AccountSettings } from 'ms-commons/clients/emailService';
 import accountRepository from '../models/accountRepository';

@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import fs from 'fs';
 import path from 'path';
 
-import authCommons, { Token } from 'ms-commons/api/auth';
+import authCommons, { Token } from 'ms-commons/api/auth/accountsAuth';
 
 const privateKey = fs.readFileSync(path.join(authCommons.findKeysPath(__dirname), 'private.key'), 'utf-8');
 const jwtExpires = parseInt(`${process.env.JWT_EXPIRES}`);

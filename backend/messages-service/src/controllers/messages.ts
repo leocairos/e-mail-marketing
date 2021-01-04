@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import repository from '../models/messageRepository';
+import sendingRepository from '../models/sendingRepository';
 import controllerCommons from 'ms-commons/api/controllers/controller';
-import { Token } from 'ms-commons/api/auth';
+import { Token } from 'ms-commons/api/auth/accountsAuth';
 import { IMessage } from '../models/message';
 import { MessageStatus } from '../models/messageStatus';
 import { getContacts } from 'ms-commons/clients/contactsService';
-import queueService from '../queueService';
-import { IQueueMessage } from '../models/queueMessage';
+import queueService from 'ms-commons/clients/queueService';
+import { SendingStatus } from 'src/models/sendingStatus';
 
 async function getMessages(req: Request, res: Response, next: any) {
   try {
@@ -93,7 +94,7 @@ async function deleteMessage(req: Request, res: Response, next: any) {
   }
 }
 
-async function sendMessage(req: Request, res: Response, next: any) {
+async function scheduleMessage(req: Request, res: Response, next: any) {
   try {
     const messageId = parseInt(req.params.id);
     if (!messageId) return res.status(400).json({ message: 'id is required' });
@@ -105,35 +106,63 @@ async function sendMessage(req: Request, res: Response, next: any) {
 
     //Getting contacts
     const contacts = await getContacts(token.jwt!);
-    if (!contacts || contacts.length === 0) return res.sendStatus(400);
+    if (!contacts || contacts.length === 0)
+      return res.sendStatus(404).json({ message: 'There are not contacts for this account' });
+
+    //Sendings Create
+    const sendings = await sendingRepository.addAll(contacts.map(contact => {
+      return {
+        accountId: token.accountId,
+        contactId: contact.id,
+        messageId,
+        status: SendingStatus.QUEUED
+      }
+    }))
+
+    if (!sendings)
+      return res.sendStatus(404).json({ message: "Couldn't save the sendings" });
+
+    //simplify sendings to queue
+    const messages = sendings.map(sending => {
+      return {
+        id: sending.id,
+        accountId: sending.accountId,
+        contactId: sending.contactId,
+        messageId: sending.messageId
+      }
+    })
 
     //Send messages to queue
     const promisses = contacts.map(item => {
-      return queueService.sendMessage({
-        accountId: token.accountId,
-        contactId: item.id,
-        messageId
-      } as IQueueMessage)
+      return queueService.sendMessageBatch(messages);
     })
     await Promise.all(promisses);
 
     //Updating message
     const messageParms = {
-      status: MessageStatus.SENT,
+      status: MessageStatus.SCHEDULE,
       sendDate: new Date(),
     } as IMessage;
 
     const updatedMessage = await repository.set(messageId, messageParms, token.accountId);
-    if (updatedMessage) return res.send(updatedMessage);
-    else return res.status(403).end();
+    if (updatedMessage) return res.status(202).json(updatedMessage);
+    else return res.sendStatus(403);
 
   } catch (error) {
-    console.log(`sendMessage: ${error}`);
+    console.log(`scheduleMessage: ${error}`);
     return res.sendStatus(400);
   }
 }
 
+async function sendMessage(req: Request, res: Response, next: any) {
+  try {
+    res.json({});
+  } catch (error) {
+    console.log(`getMessages: ${error}`)
+    res.sendStatus(400);
+  }
+}
 export default {
   getMessages, getMessage, addMessage,
-  setMessage, deleteMessage, sendMessage
+  setMessage, deleteMessage, scheduleMessage, sendMessage
 };
