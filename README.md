@@ -21,6 +21,19 @@
 
     * 
 
+### Tips
+
+* Swagger to documentation API
+
+* Captcha to protect open routes (as login e signup)
+  * ... para proteger o front de bots é uma possibilidade sim. 
+  * Outra dica é usar um WAF, como o da Cloudflare.
+
+* Os melhores e mais completos WAF são pagos, mas acho que a Cloudflare fornece alguma proteção mesmo no nível gratuito.
+
+* O Captcha do Google é free
+
+
 ## On deploy
 
   * copy/create keys folder in server

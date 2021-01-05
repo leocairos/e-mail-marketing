@@ -1,7 +1,9 @@
 import { Router } from 'express';
 import middlewaresCommons from 'ms-commons/api/routes/middlewares';
 
-import { validateMessageSchema, validateUpdateMessageSchema } from './middlewares';
+import {
+  validateMessageSchema, validateUpdateMessageSchema, validateSendingSchema
+} from './middlewares';
 
 import controller from '../controllers/messages'
 
@@ -27,6 +29,8 @@ router.post('/messages/:id/send',
   middlewaresCommons.validateAccountAuth, controller.scheduleMessage);
 
 router.post('/messages/sending',
-  middlewaresCommons.validateMicroserviceAuth, controller.sendMessage);
+  middlewaresCommons.validateMicroserviceAuth,
+  validateSendingSchema,
+  controller.sendMessage);
 
 export default router; 

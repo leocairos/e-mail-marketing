@@ -5,9 +5,12 @@ import controllerCommons from 'ms-commons/api/controllers/controller';
 import { Token } from 'ms-commons/api/auth/accountsAuth';
 import { IMessage } from '../models/message';
 import { MessageStatus } from '../models/messageStatus';
-import { getContacts } from 'ms-commons/clients/contactsService';
+import { getContacts, getContact } from 'ms-commons/clients/contactsService';
 import queueService from 'ms-commons/clients/queueService';
-import { SendingStatus } from 'src/models/sendingStatus';
+import { getAccountEmail } from 'ms-commons/clients/accountsService';
+import { SendingStatus } from '../models/sendingStatus';
+import { ISending } from '../models/sending';
+import messageRepository from '../models/messageRepository';
 
 async function getMessages(req: Request, res: Response, next: any) {
   try {
@@ -156,7 +159,33 @@ async function scheduleMessage(req: Request, res: Response, next: any) {
 
 async function sendMessage(req: Request, res: Response, next: any) {
   try {
-    res.json({});
+    const params = req.body as ISending;
+
+    //get sending
+    const sending = await sendingRepository.findQueuedOne(
+      params.id!, params.messageId, params.accountId, params.contactId
+    )
+    if (!sending) return res.status(404).json({ message: 'sending not foud' });
+
+    //TODO: cache implements in future (exanple: by redis)
+    //get message
+    const message = await messageRepository
+      .findById(sending.messageId, sending.accountId);
+    if (!message) return res.status(404).json({ message: 'message not foud' });
+
+    //get contact (to mail)
+    const contact = await getContact(sending.contactId, sending.accountId);
+    if (!contact) return res.status(404).json({ message: 'contact not foud' });
+
+    // get accountEmail (from mail)
+    const accountEmail = await getAccountEmail(sending.accountId, message.accountEmailId);
+    if (!accountEmail) return res.status(404).json({ message: 'accountEmail not foud' });
+
+    //sending mail (SES)
+
+    //updating message
+
+
   } catch (error) {
     console.log(`getMessages: ${error}`)
     res.sendStatus(400);

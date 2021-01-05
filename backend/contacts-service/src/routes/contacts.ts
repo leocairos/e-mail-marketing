@@ -7,6 +7,9 @@ import contactsController from '../controllers/contacts'
 
 const router = Router();
 
+router.get('/contacts/:id/account/:accountId',
+  middlewaresCommons.validateMicroserviceAuth, contactsController.getContact)
+
 router.get('/contacts/:id', middlewaresCommons.validateAccountAuth, contactsController.getContact)
 
 router.get('/contacts/', middlewaresCommons.validateAccountAuth, contactsController.getContacts)

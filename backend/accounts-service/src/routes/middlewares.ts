@@ -22,6 +22,10 @@ async function validateAuthentication(req: Request, res: Response, next: any) {
   return commonsMiddlerware.validateAccountAuth(req, res, next);
 }
 
+async function validateMSAuthentication(req: Request, res: Response, next: any) {
+  return commonsMiddlerware.validateMicroserviceAuth(req, res, next);
+}
+
 async function validateAuthorization(req: Request, res: Response, next: any) {
   const accountId = parseInt(req.params.id);
   if (!accountId) return res.status(400).end();
@@ -45,6 +49,7 @@ export {
   validateUpdateAccountSchema,
   validateLoginSchema,
   validateAuthentication,
+  validateMSAuthentication,
   validateAuthorization,
   validateAccountEmailSchema,
   validateAccountUpdateEmailSchema

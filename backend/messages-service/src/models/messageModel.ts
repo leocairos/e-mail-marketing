@@ -1,6 +1,7 @@
 import Sequelize, { Model, Optional } from 'sequelize'
 import database from 'ms-commons/data/db';
 import { IMessage } from './message';
+import Sending from './sendingModel';
 
 interface IMessageCreationAttributes extends Optional<IMessage, "id"> { }
 
@@ -14,6 +15,10 @@ const Message = database.define<IMessageModel>('message', {
     allowNull: false,
   },
   accountId: {
+    type: Sequelize.INTEGER.UNSIGNED,
+    allowNull: false,
+  },
+  accountEmailId: {
     type: Sequelize.INTEGER.UNSIGNED,
     allowNull: false,
   },
@@ -36,6 +41,14 @@ const Message = database.define<IMessageModel>('message', {
   },
 })
 
-Message.sync();
+Message.hasMany(Sending, {
+  constraints: true,
+  foreignKey: 'messageId'
+})
+
+Sending.belongsTo(Message, {
+  constraints: true,
+  foreignKey: 'messageId'
+})
 
 export default Message;

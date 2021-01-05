@@ -20,10 +20,14 @@ async function getContacts(req: Request, res: Response, next: any) {
 async function getContact(req: Request, res: Response, next: any) {
   try {
     const contactId = parseInt(req.params.id);
-    if (!contactId) return res.status(400).json({ message: 'id is required' });
+    if (!contactId) return res.status(400).json({ message: 'contact id is required' });
 
-    const token = controllerCommons.getToken(res) as Token;
-    const contact = await repository.findById(contactId, token.accountId);
+    let accountId = parseInt(req.params.accountId);
+    if (!accountId) {
+      const token: Token = controllerCommons.getToken(res) as Token;
+      accountId = token.accountId;
+    }
+    const contact = await repository.findById(contactId, accountId);
 
     if (contact === null) return res.sendStatus(404);
     else return res.json(contact);
