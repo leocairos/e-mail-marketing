@@ -2,6 +2,8 @@ import AWS from 'aws-sdk';
 
 AWS.config.update({ region: process.env.AWS_SES_REGION });
 
+const EMAIL_ENCONDING: string = 'UTF-8';
+
 export type DnsRecord = { type: string, name: string, value: string, priority?: number };
 
 export type DnsSettings = { dnsRecords: Array<DnsRecord>, verified: boolean };
@@ -12,6 +14,8 @@ export type AccountSettings = {
 };
 
 export type EmailSetting = { email: string; verified: boolean };
+
+export type SendEmailResponse = { success: boolean, messageId?: string };
 
 async function getEmailSettings(emails: string[]) {
   const ses = new AWS.SESV2();
@@ -108,10 +112,15 @@ async function getAccountSettings(domain: string, emails: string[]) {
   const ses = new AWS.SESV2();
   const parms = { EmailIdentity: domain };
 
+  console.log('getAccountSettingsAAAAAAAAAA')
   const response = await ses.getEmailIdentity(parms).promise();
+  console.log('getAccountSettingsBBBBBBBBBB')
   const dkimSettings = getDkimSettings(domain, response);
+  console.log('getAccountSettingsCCCCCCCCCC')
   const spfSettings = getSpfSettings(domain, response);
+  console.log('getAccountSettingsDDDDDDD')
   const domainSettings = await getDomainSettings(domain);
+  console.log('getAccountSettingsEEEEEEEEEEE')
 
   let emailAddresses = [] as Array<EmailSetting>;
   if (emails && emails.length > 0)
@@ -148,11 +157,40 @@ async function canSendEmail(email: string) {
   return emailSetting && emailSetting.length > 0 && emailSetting[0].verified;
 }
 
+async function sendEmail(
+  fromName: string, fromAddress: string, toAddress: string,
+  subject: string, body: string) {
+  if (!canSendEmail(fromAddress)) return { success: false } as SendEmailResponse;
+
+  const ses = new AWS.SESV2();
+  const params = {
+    Content: {
+      Simple: {
+        Body: {
+          Html: { Data: body, Charset: EMAIL_ENCONDING }
+        },
+        Subject: { Data: subject, Charset: EMAIL_ENCONDING }
+      }
+    },
+    Destination: { ToAddresses: [toAddress] },
+    FeedbackForwardingEmailAddress: fromAddress,
+    FromEmailAddress: `${fromName} <${fromAddress}>`,
+    ReplyToAddresses: [fromAddress]
+  }
+
+  const response = await ses.sendEmail(params).promise();
+
+  return {
+    success: !!response.MessageId,
+    messageId: response.MessageId
+  } as SendEmailResponse;
+}
 export default {
   addEmailIdentity,
   createAccountSettings,
   getAccountSettings,
   removeEmailIdentity,
   getEmailSettings,
-  canSendEmail
+  canSendEmail,
+  sendEmail
 }

@@ -24,7 +24,7 @@ async function getContact(req: Request, res: Response, next: any) {
 
     let accountId = parseInt(req.params.accountId);
     if (!accountId) {
-      const token: Token = controllerCommons.getToken(res) as Token;
+      const token = controllerCommons.getToken(res) as Token;
       accountId = token.accountId;
     }
     const contact = await repository.findById(contactId, accountId);

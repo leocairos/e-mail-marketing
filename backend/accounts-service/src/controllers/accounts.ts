@@ -182,6 +182,8 @@ async function createAccountSettings(req: Request, res: Response, next: any) {
 
     if (!account) return res.sendStatus(404);
 
+    console.log(`createAccountSettings: AAAAA`);
+
     let accountSettings: AccountSettings;
     if (req.query.force === 'true') {
       await emailsService.removeEmailIdentity(account.domain);
@@ -189,6 +191,7 @@ async function createAccountSettings(req: Request, res: Response, next: any) {
       accountSettings = await emailsService.getAccountSettings(account.domain, []);
       if (accountSettings) return res.json(accountSettings);
     }
+    console.log(`createAccountSettings: BBB`);
 
     accountSettings = await emailsService.createAccountSettings(account.domain);
     return res.status(201).json(accountSettings);
@@ -239,13 +242,15 @@ async function getAccountEmails(req: Request, res: Response, next: any) {
     if (!account) return res.sendStatus(404);
 
     let emails: string[] = [];
-    const accountsEmails = account.get('accountEmails', { plain: true }) as IAccountEmail[];
-    if (accountsEmails && accountsEmails.length > 0)
-      emails = accountsEmails.map(item => item.email);
+    const accountEmails = account.get('accountEmails', { plain: true }) as IAccountEmail[];
+    if (accountEmails && accountEmails.length > 0)
+      emails = accountEmails.map(item => item.email);
 
     const settings = await emailsService.getEmailSettings(emails);
-
-    return res.json(settings);
+    accountEmails.forEach(item => {
+      item.settings = settings.find(s => s.email === item.email)
+    })
+    return res.status(200).json(accountEmails);
   } catch (error) {
     console.log(`getAccountEmails: ${error}`);
     res.sendStatus(400);
@@ -281,7 +286,7 @@ async function getAccountEmail(req: Request, res: Response, next: any) {
 
 async function setAccountEmail(req: Request, res: Response, next: any) {
   try {
-    const accountEmailId = parseInt(req.params.id);
+    const accountEmailId = parseInt(req.params.accountEmailId);
     if (!accountEmailId) return res.status(400).json({ message: 'id is required' });
 
     const token = controllerCommons.getToken(res) as Token;

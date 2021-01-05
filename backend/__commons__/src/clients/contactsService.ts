@@ -3,6 +3,7 @@ import microservicesAuth from '../api/auth/microservicesAuth';
 
 export interface IContact {
   id: number;
+  email: string;
 }
 
 export async function getContacts(jwt: string) {

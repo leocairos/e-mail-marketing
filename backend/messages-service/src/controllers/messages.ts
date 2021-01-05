@@ -7,6 +7,7 @@ import { IMessage } from '../models/message';
 import { MessageStatus } from '../models/messageStatus';
 import { getContacts, getContact } from 'ms-commons/clients/contactsService';
 import queueService from 'ms-commons/clients/queueService';
+import emailService from 'ms-commons/clients/emailService';
 import { getAccountEmail } from 'ms-commons/clients/accountsService';
 import { SendingStatus } from '../models/sendingStatus';
 import { ISending } from '../models/sending';
@@ -182,9 +183,26 @@ async function sendMessage(req: Request, res: Response, next: any) {
     if (!accountEmail) return res.status(404).json({ message: 'accountEmail not foud' });
 
     //sending mail (SES)
+    const result = await emailService
+      .sendEmail(accountEmail.name, accountEmail.email,
+        contact.email, message.subject, message.body)
+    if (!result.success)
+      return res.status(400).json({ message: "Couldn't send the e-mail message" });
+
+    sending.status = SendingStatus.SENT;
+    sending.sendDate = new Date();
+    await sendingRepository.set(params.id!, sending, sending.accountId);
 
     //updating message
+    const hasMore = await sendingRepository
+      .hasQueuedSendings(sending.messageId, sending.accountId);
+    if (!hasMore) {
+      message.status = MessageStatus.SENT;
+      message.sendDate = new Date();
+      await repository.set(sending.messageId, message, sending.accountId);
+    }
 
+    res.status(202).json(sending);
 
   } catch (error) {
     console.log(`getMessages: ${error}`)

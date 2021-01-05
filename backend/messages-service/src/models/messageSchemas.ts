@@ -7,6 +7,10 @@ const messageSchema = Joi.object({
   accountId: Joi.number()
     .integer()
     .min(1),
+  accountEmailId: Joi.number()
+    .integer()
+    .min(1)
+    .required(),
   subject: Joi.string()
     .min(3)
     .max(150)
@@ -29,6 +33,9 @@ const messageUpdateSchema = Joi.object({
   body: Joi.string()
     .min(8)
     .max(65535),
+  accountEmailId: Joi.number()
+    .integer()
+    .min(1),
   sendDate: Joi.date(),
   status: Joi.number()
     .integer()
