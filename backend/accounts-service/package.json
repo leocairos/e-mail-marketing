@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "ts-node -r dotenv/config -r tsconfig-paths/register --transpile-only ./dist/accounts-service/src/server",
-    "compile": "tsc && ts-node -r dotenv/config -r tsconfig-paths/register ./dist/accounts-service/src/server",
+    "compile": "tsc && ts-node -r dotenv/config -r tsconfig-paths/register --transpile-only ./dist/accounts-service/src/server",
     "dev": "nodemon -e ts,json --ignore dist --exec \"npm run compile\"",
     "test": "jest",
     "dev:debug": "ts-node-dev -r dotenv/config -r tsconfig-paths/register --inspect --transpile-only --ignore-watch node-modules src/server.ts"
