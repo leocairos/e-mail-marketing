@@ -22,4 +22,7 @@
   "exclude": [
     "__tests__"
   ],
+  "ts-node": {
+    "transpileOnly": true
+  },
 }
