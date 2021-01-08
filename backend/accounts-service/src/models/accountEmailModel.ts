@@ -1,4 +1,4 @@
-import Sequelize, { Model, Optional } from 'sequelize'
+import Sequelize, { Model, Optional } from 'sequelize';
 import database from 'ms-commons/data/db';
 import { IAccountEmail } from './accountEmail';
 
