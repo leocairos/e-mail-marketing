@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && ts-node -r dotenv/config -r tsconfig-paths/register ./dist/contacts-service/src/server.js",
+    "start": "ts-node -r dotenv/config -r tsconfig-paths/register --transpile-only ./dist/contacts-service/src/server",
     "compile": "tsc && ts-node -r dotenv/config -r tsconfig-paths/register ./dist/contacts-service/src/server.js",
     "dev": "nodemon -e ts,json --ignore dist --exec \"npm run compile\"",
+    "dev:debug": "ts-node-dev -r dotenv/config -r tsconfig-paths/register --inspect --transpile-only --ignore-watch node-modules src/server.ts",
     "test": "jest"
   },
   "keywords": [],
@@ -30,6 +31,7 @@
     "supertest": "^6.0.1",
     "ts-jest": "^26.4.4",
     "ts-node": "^9.1.1",
+    "ts-node-dev": "^1.1.1",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^4.1.2"
   }

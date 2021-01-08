@@ -35,6 +35,6 @@ const Sending = database.define<ISendingModel>('sending', {
   },
 })
 
-Sending.sync();
+//Sending.sync();
 
 export default Sending;

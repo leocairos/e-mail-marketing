@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import Joi from 'joi';
 import authAccount from '../auth/accountsAuth';
 import microservicesAuth from '../auth/microservicesAuth';
-import authMicroservice from '../auth/microservicesAuth';
 
 function validateSchema(schema: Joi.ObjectSchema<any>, req: Request, res: Response, next: any) {
   const { error } = schema.validate(req.body);
